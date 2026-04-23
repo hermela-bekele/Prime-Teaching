@@ -1,0 +1,7 @@
+export type Role = "teacher" | "dept_head" | "leader";
+
+export type UserSummary = {
+  id: string;
+  email: string;
+  role: Role;
+};

@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "PRIME EduAI",
+    "slug": "prime-eduai-mobile",
+    "version": "1.0.0",
+    "scheme": "prime-eduai",
+    "orientation": "portrait",
+    "platforms": ["ios", "android", "web"],
+    "assetBundlePatterns": ["**/*"],
+    "plugins": ["expo-router"]
+  }
+}

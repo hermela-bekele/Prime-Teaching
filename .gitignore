@@ -1,0 +1,16 @@
+node_modules
+.turbo
+.next
+dist
+build
+.expo
+*.tsbuildinfo
+
+.venv
+__pycache__
+.pytest_cache
+.mypy_cache
+*.pyc
+
+.env
+.env.local
