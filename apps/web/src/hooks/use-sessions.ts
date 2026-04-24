@@ -2,15 +2,15 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { apiClient } from "@/lib/api-client";
-import { useSessionStore } from "@/stores/session-store";
+import { fetchMySessions } from "@/lib/api-client";
+import { useAuthStore } from "@/stores/authStore";
 
-export function useSessions() {
-  const token = useSessionStore((s) => s.token);
+export function useSessions(filters?: { status?: string; date?: string }) {
+  const token = useAuthStore((s) => s.token);
 
   return useQuery({
-    queryKey: ["sessions", token],
-    queryFn: () => apiClient<unknown[]>("/calendar", { token }),
+    queryKey: ["calendar", "my-sessions", filters, token],
+    queryFn: () => fetchMySessions(filters),
     enabled: Boolean(token)
   });
 }

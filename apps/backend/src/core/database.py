@@ -1,22 +1,32 @@
-from collections.abc import Generator
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
-
-from src.core.config import get_settings
+from src.core.config import get_settings, postgres_dsn
 
 settings = get_settings()
-engine = create_engine(settings.postgres_url, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
+# Create async engine
+engine = create_async_engine(
+    postgres_dsn(settings),
+    echo=settings.debug,
+    pool_size=10,
+    max_overflow=20,
+)
 
-class Base(DeclarativeBase):
-    pass
+# Create session factory
+AsyncSessionLocal = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
-
-def get_db() -> Generator:
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+async def get_db() -> AsyncSession:
+    """Dependency for FastAPI endpoints"""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()

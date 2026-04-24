@@ -1,8 +1,8 @@
 export default function SchoolLeaderReportsPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-semibold">Reports</h1>
-      <p className="mt-2 text-slate-600">Aggregate reporting for leadership.</p>
-    </main>
+    <section className="rounded-xl border border-blue-100 bg-white p-5">
+      <h2 className="text-lg font-semibold">Department Reports</h2>
+      <p className="mt-1 text-sm text-slate-600">Placeholder for deeper department drill-downs.</p>
+    </section>
   );
 }

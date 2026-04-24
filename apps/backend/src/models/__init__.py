@@ -1,27 +1,35 @@
-from src.models.assessment import Assessment
-from src.models.calendar import Calendar
-from src.models.lesson_plan import LessonPlan
-from src.models.progress import Progress
-from src.models.resource import Resource
-from src.models.school import School
-from src.models.session import Session
-from src.models.subject import Subject
-from src.models.subtopic import Subtopic
-from src.models.teaching_note import TeachingNote
-from src.models.unit import Unit
-from src.models.user import User
+from .base import Base
+from .enums import *
+from .school import School
+from .user import User
+from .subject import Subject
+from .unit import Unit
+from .subtopic import Subtopic, subtopic_prerequisites
+from .resource import Resource
+from .calendar import CalendarRun
+from .session import CalendarSession
+from .lesson_plan import LessonPlan
+from .teaching_note import TeachingNote
+from .assessment import Assessment
+from .progress import TeacherProgress
+from .resource_recommendation import ResourceRecommendation
+from .ai_job import AiJob
 
 __all__ = [
-    "Assessment",
-    "Calendar",
-    "LessonPlan",
-    "Progress",
-    "Resource",
+    "Base",
     "School",
-    "Session",
+    "User", 
     "Subject",
-    "Subtopic",
-    "TeachingNote",
     "Unit",
-    "User",
+    "Subtopic",
+    "subtopic_prerequisites",
+    "Resource",
+    "CalendarRun",
+    "CalendarSession",
+    "LessonPlan",
+    "TeachingNote",
+    "Assessment",
+    "TeacherProgress",
+    "ResourceRecommendation",
+    "AiJob",
 ]

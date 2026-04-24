@@ -1,8 +1,8 @@
 export default function DepartmentHeadReviewPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-2xl font-semibold">Review</h1>
-      <p className="mt-2 text-slate-600">Review submissions and quality.</p>
-    </main>
+    <section className="rounded-xl border border-blue-100 bg-white p-5">
+      <h2 className="text-lg font-semibold">Reviews</h2>
+      <p className="mt-1 text-sm text-slate-600">Lesson plan approval queue placeholder.</p>
+    </section>
   );
 }
