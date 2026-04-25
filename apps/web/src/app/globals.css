@@ -6,6 +6,17 @@ body {
   @apply bg-slate-50 text-slate-900;
 }
 
+/* Hide scrollbar chrome while preserving scroll behavior. */
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and old Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

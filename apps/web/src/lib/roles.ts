@@ -17,3 +17,13 @@ export function navRoleKey(user: AppUser | null): "teacher" | "department-head" 
   if (r === "admin" || r === "administrator") return "admin";
   return "teacher";
 }
+
+/** Role-scoped route guard for dashboard paths. */
+export function canAccessPathForRole(role: string, pathname: string): boolean {
+  const r = role.toLowerCase().replace(/-/g, "_");
+  if (pathname.startsWith("/teacher")) return r === "teacher" || r === "instructor";
+  if (pathname.startsWith("/department-head")) return r === "department_head" || r === "dept_head" || r === "head";
+  if (pathname.startsWith("/school-leader")) return r === "school_leader" || r === "leader" || r === "principal";
+  if (pathname.startsWith("/admin")) return r === "admin" || r === "administrator";
+  return true;
+}

@@ -10,7 +10,6 @@ import { assessmentsSessionQueryKey, pickPrimaryAssessment, useAssessmentsBySess
 import { useGenerationJob } from "@/hooks/use-generation-job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { extractJobId, getApiErrorMessage, postGenerateAssessment } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
@@ -158,7 +157,7 @@ export function AssessmentDetailPanel({ sessionId, sessionTitle, sessionNumber }
 
   if (!primary) {
     return (
-      <div className="flex max-h-[calc(100vh-10rem)] min-h-[min(70vh,520px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="flex h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-full">
         <div className="border-b border-slate-100 p-5">
           {sessionTitle ? <p className="truncate text-sm font-semibold text-slate-900">{sessionTitle}</p> : null}
           <p className="mt-2 text-sm text-slate-600">
@@ -191,7 +190,7 @@ export function AssessmentDetailPanel({ sessionId, sessionTitle, sessionNumber }
   }
 
   return (
-    <div className="flex max-h-[calc(100vh-10rem)] min-h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="flex h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-full">
       <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
           <Badge className="border-blue-200 bg-blue-50 font-bold uppercase text-blue-800 hover:bg-blue-50">
@@ -269,7 +268,7 @@ export function AssessmentDetailPanel({ sessionId, sessionTitle, sessionNumber }
         </div>
       )}
 
-      <ScrollArea className="min-h-0 flex-1">
+      <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto">
         <div ref={printRef} className="space-y-4 p-5 sm:p-6">
           {sessionTitle ? (
             <p className="text-sm font-semibold text-slate-900 sm:hidden">{sessionTitle}</p>
@@ -288,7 +287,7 @@ export function AssessmentDetailPanel({ sessionId, sessionTitle, sessionNumber }
             </>
           ) : null}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

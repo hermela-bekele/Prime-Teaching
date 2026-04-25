@@ -35,15 +35,9 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { asAppRoute } from "@/lib/navigation";
-import { dashboardPathForRole, navRoleKey } from "@/lib/roles";
+import { canAccessPathForRole, dashboardPathForRole, navRoleKey } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
-
-/** Demo copy aligned with PRIME Teaching mockups (replace when school profile is available from API). */
-const BRAND_CONTEXT = {
-  school: "Addis Prep Academy",
-  department: "Mathematics Dept."
-};
 
 type NavItem = { href: string; label: string; icon: React.ReactNode };
 
@@ -79,10 +73,7 @@ function navForRole(roleKey: ReturnType<typeof navRoleKey>): NavItem[] {
         { href: "/school-leader/analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4 shrink-0" /> }
       ];
     case "admin":
-      return [
-        { href: "/admin/calendars", label: "Calendar Jobs", icon: <CalendarDays className="h-4 w-4 shrink-0" /> },
-        { href: "/calendar/new", label: "New Calendar", icon: <CalendarDays className="h-4 w-4 shrink-0" /> }
-      ];
+      return [{ href: "/admin/calendars", label: "Calendars", icon: <CalendarDays className="h-4 w-4 shrink-0" /> }];
     default:
       return [];
   }
@@ -101,12 +92,26 @@ function roleMenuLabel(roleKey: ReturnType<typeof navRoleKey>): string {
   }
 }
 
+function roleKeyToUserRole(roleKey: ReturnType<typeof navRoleKey>): string {
+  switch (roleKey) {
+    case "department-head":
+      return "department_head";
+    case "school-leader":
+      return "school_leader";
+    case "admin":
+      return "admin";
+    default:
+      return "teacher";
+  }
+}
+
 export function DashboardLayoutClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
   const user = useAuthStore((s) => s.user);
   const hydrated = useAuthStore((s) => s._hydrated);
+  const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -119,10 +124,22 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
   }, [hydrated, token, router]);
 
   useEffect(() => {
+    if (!hydrated || !token || !user) return;
+    if (!canAccessPathForRole(user.role, pathname)) {
+      router.replace(asAppRoute(dashboardPathForRole(user.role)));
+    }
+  }, [hydrated, token, user, pathname, router]);
+
+  useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
 
   const roleKey = useMemo(() => navRoleKey(user), [user]);
+  const brandContext = useMemo(() => {
+    if (roleKey === "admin") return { school: "PRIME HQ", department: "" };
+    if (roleKey === "school-leader") return { school: "Addis Prep Academy", department: "" };
+    return { school: "Addis Prep Academy", department: "Mathematics Dept." };
+  }, [roleKey]);
   const navItems = useMemo(() => navForRole(roleKey), [roleKey]);
   const currentNavHref = useMemo(() => activeNavHref(pathname, navItems), [pathname, navItems]);
   const roleLabel = roleMenuLabel(roleKey);
@@ -210,8 +227,8 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
       <div className="mt-auto border-t border-white/10 p-4">
         {!collapsed ? (
           <div className="space-y-0.5 px-1">
-            <p className="text-xs font-medium text-slate-400">{BRAND_CONTEXT.school}</p>
-            <p className="text-xs text-slate-500">{BRAND_CONTEXT.department}</p>
+            <p className="text-xs font-medium text-slate-400">{brandContext.school}</p>
+            {brandContext.department ? <p className="text-xs text-slate-500">{brandContext.department}</p> : null}
           </div>
         ) : (
           <div className="flex justify-center">
@@ -224,7 +241,7 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] text-slate-900">
-      <aside className={cn("hidden lg:block", collapsed ? "w-[72px]" : "w-60")}>{sidebar}</aside>
+      <aside className={cn("fixed inset-y-0 left-0 z-30 hidden lg:block", collapsed ? "w-[72px]" : "w-60")}>{sidebar}</aside>
 
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
@@ -233,7 +250,7 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className={cn("flex min-w-0 flex-1 flex-col", collapsed ? "lg:pl-[72px]" : "lg:pl-60")}>
         <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 sm:px-6">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <Button
@@ -258,7 +275,7 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
             </Button>
             <div className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900">
               <Building2 className="hidden h-4 w-4 shrink-0 text-slate-400 sm:inline" aria-hidden />
-              <span className="truncate">{BRAND_CONTEXT.school}</span>
+              <span className="truncate">{brandContext.school}</span>
             </div>
           </div>
 
@@ -280,19 +297,40 @@ export function DashboardLayoutClient({ children }: { children: React.ReactNode 
               <DropdownMenuContent align="end" className="w-52">
                 <DropdownMenuLabel className="text-xs font-normal text-slate-500">Switch role (demo)</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled={roleKey === "teacher"} onClick={() => router.push(asAppRoute("/teacher"))}>
+                <DropdownMenuItem
+                  disabled={roleKey === "teacher"}
+                  onClick={() => {
+                    if (user) setUser({ ...user, role: roleKeyToUserRole("teacher") });
+                    router.push(asAppRoute("/teacher"));
+                  }}
+                >
                   Teacher
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   disabled={roleKey === "department-head"}
-                  onClick={() => router.push(asAppRoute("/department-head"))}
+                  onClick={() => {
+                    if (user) setUser({ ...user, role: roleKeyToUserRole("department-head") });
+                    router.push(asAppRoute("/department-head"));
+                  }}
                 >
                   Department Head
                 </DropdownMenuItem>
-                <DropdownMenuItem disabled={roleKey === "school-leader"} onClick={() => router.push(asAppRoute("/school-leader"))}>
+                <DropdownMenuItem
+                  disabled={roleKey === "school-leader"}
+                  onClick={() => {
+                    if (user) setUser({ ...user, role: roleKeyToUserRole("school-leader") });
+                    router.push(asAppRoute("/school-leader"));
+                  }}
+                >
                   School Leader
                 </DropdownMenuItem>
-                <DropdownMenuItem disabled={roleKey === "admin"} onClick={() => router.push(asAppRoute("/admin/calendars"))}>
+                <DropdownMenuItem
+                  disabled={roleKey === "admin"}
+                  onClick={() => {
+                    if (user) setUser({ ...user, role: roleKeyToUserRole("admin") });
+                    router.push(asAppRoute("/admin/calendars"));
+                  }}
+                >
                   Admin
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -11,7 +11,6 @@ import { useGenerationJob } from "@/hooks/use-generation-job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { extractJobId, getApiErrorMessage, postGenerateLessonPlan } from "@/lib/api-client";
 import { getSessionNumber } from "@/lib/session-utils";
@@ -271,7 +270,7 @@ export function LessonPlanViewer({ sessionId, variant = "card" }: LessonPlanView
   if (isPanel) {
     return (
       <div
-        className="flex max-h-[calc(100vh-10rem)] min-h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm"
+        className="flex h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-full"
         aria-labelledby={panelId}
       >
         <div className="flex flex-col gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -329,7 +328,7 @@ export function LessonPlanViewer({ sessionId, variant = "card" }: LessonPlanView
           </div>
         )}
 
-        <ScrollArea className="min-h-0 flex-1">
+        <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto">
           <div ref={printRef} className="space-y-4 p-5 sm:p-6">
             {plan ? (
               renderPlanPanel(plan)
@@ -339,7 +338,7 @@ export function LessonPlanViewer({ sessionId, variant = "card" }: LessonPlanView
               </p>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </div>
     );
   }
@@ -382,7 +381,7 @@ export function LessonPlanViewer({ sessionId, variant = "card" }: LessonPlanView
             {jobQuery.data.progress != null ? ` · ${Math.round(jobQuery.data.progress * 100)}%` : null}
           </div>
         )}
-        <ScrollArea className="h-[min(70vh,560px)] flex-1 p-4">
+        <div className="scrollbar-hidden h-[min(70vh,560px)] flex-1 overflow-y-auto p-4">
           <div ref={printRef} className="space-y-6 pr-3">
             {plan ? (
               renderPlanCard(plan)
@@ -390,7 +389,7 @@ export function LessonPlanViewer({ sessionId, variant = "card" }: LessonPlanView
               <p className="text-sm text-slate-600">No lesson plan yet. Generate one to populate objectives, delivery, practice, and homework.</p>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </CardContent>
     </Card>
   );

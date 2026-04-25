@@ -11,7 +11,6 @@ import { sessionNoteQueryKey, useTeachingNoteBySession } from "@/hooks/use-teach
 import { useGenerationJob } from "@/hooks/use-generation-job";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { extractJobId, getApiErrorMessage, postGenerateTeachingNote } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
@@ -166,7 +165,7 @@ export function TeachingNoteDetailPanel({ sessionId, sessionTitle }: TeachingNot
   const sections = hasNote && note ? renderNoteSections(note) : [];
 
   return (
-    <div className="flex max-h-[calc(100vh-10rem)] min-h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="flex h-[min(70vh,560px)] flex-col rounded-xl border border-slate-200 bg-white shadow-sm lg:h-full">
       <div className="flex flex-col gap-3 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 space-y-1">
           {sessionTitle ? <p className="truncate text-sm font-semibold text-slate-900">{sessionTitle}</p> : null}
@@ -209,7 +208,7 @@ export function TeachingNoteDetailPanel({ sessionId, sessionTitle }: TeachingNot
         </div>
       )}
 
-      <ScrollArea className="min-h-0 flex-1">
+      <div className="scrollbar-hidden min-h-0 flex-1 overflow-y-auto">
         <div className="space-y-4 p-5 sm:p-6">
           {notFound || !hasNote ? (
             <p className="text-sm text-slate-600">
@@ -222,7 +221,7 @@ export function TeachingNoteDetailPanel({ sessionId, sessionTitle }: TeachingNot
             <p className="text-sm text-slate-600">Note record exists but all sections are empty.</p>
           )}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }

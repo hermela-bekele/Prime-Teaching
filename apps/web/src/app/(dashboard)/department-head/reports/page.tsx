@@ -1,12 +1,25 @@
+import { HardHat } from "lucide-react";
+
 export default function DepartmentHeadReportsPage() {
   return (
-    <section className="rounded-xl border border-blue-100 bg-white p-5">
-      <h2 className="text-lg font-semibold">Reports</h2>
-      <p className="mt-1 text-sm text-slate-600">Downloadable department reports placeholder.</p>
-      <div className="mt-4 flex gap-2">
-        <button className="rounded bg-blue-700 px-3 py-2 text-sm text-white">Download PDF</button>
-        <button className="rounded border border-slate-300 px-3 py-2 text-sm">Download CSV</button>
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900">Reports</h1>
+        <p className="mt-1 text-sm text-slate-500">Downloadable department reports and exports.</p>
       </div>
-    </section>
+
+      <section className="flex min-h-[190px] items-center justify-center rounded-xl border border-slate-200 bg-white">
+        <div className="flex max-w-sm flex-col items-center text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <HardHat className="h-5 w-5" />
+          </div>
+          <h2 className="text-3xl font-semibold text-slate-900">Coming next</h2>
+          <p className="mt-2 text-sm text-slate-500">
+            This section is part of the v1 spec. The data model and dashboard surfaces are wired - full views land in the next
+            iteration.
+          </p>
+        </div>
+      </section>
+    </div>
   );
 }

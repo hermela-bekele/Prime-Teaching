@@ -16,13 +16,28 @@ import { extractAccessToken, fetchMe, getApiErrorMessage, registerRequest } from
 import { mapAuthUserDto } from "@/lib/user-mapper";
 import { useAuthStore } from "@/stores/authStore";
 
+function hasAccessToken(res: unknown): res is { access_token?: string; token?: string } {
+  return typeof res === "object" && res !== null && ("access_token" in res || "token" in res);
+}
+
 const schema = z
   .object({
     name: z.string().min(2, "Name is required"),
     email: z.string().email("Valid email required"),
-    school_name: z.string().optional(),
+    school_name: z.string().min(2, "School name is required"),
+    role: z.enum(["teacher", "department_head", "school_leader", "admin"]),
+    department_name: z.string().optional(),
     password: z.string().min(8, "At least 8 characters"),
     confirm: z.string().min(8, "Confirm your password")
+  })
+  .superRefine((d, ctx) => {
+    if (d.role === "department_head" && !(d.department_name ?? "").trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["department_name"],
+        message: "Department name is required for Department Head"
+      });
+    }
   })
   .refine((d) => d.password === d.confirm, { message: "Passwords do not match", path: ["confirm"] });
 
@@ -32,7 +47,15 @@ export default function RegisterPage() {
   const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", email: "", school_name: "", password: "", confirm: "" }
+    defaultValues: {
+      name: "",
+      email: "",
+      school_name: "",
+      role: "teacher",
+      department_name: "",
+      password: "",
+      confirm: ""
+    }
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -41,9 +64,11 @@ export default function RegisterPage() {
         email: values.email,
         password: values.password,
         name: values.name,
+        role: values.role,
+        department_name: values.department_name?.trim() || undefined,
         school_name: values.school_name
       });
-      const token = extractAccessToken(res);
+      const token = hasAccessToken(res) ? extractAccessToken(res) : null;
       if (token) {
         useAuthStore.getState().setToken(token);
         const me = await fetchMe();
@@ -79,9 +104,35 @@ export default function RegisterPage() {
           {form.formState.errors.email && <p className="text-xs text-rose-600">{form.formState.errors.email.message}</p>}
         </div>
         <div className="space-y-2">
-          <Label htmlFor="school_name">School name (optional)</Label>
+          <Label htmlFor="school_name">School name</Label>
           <Input id="school_name" {...form.register("school_name")} />
+          {form.formState.errors.school_name && (
+            <p className="text-xs text-rose-600">{form.formState.errors.school_name.message}</p>
+          )}
         </div>
+        <div className="space-y-2">
+          <Label htmlFor="role">Role</Label>
+          <select
+            id="role"
+            className="flex h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm"
+            {...form.register("role")}
+          >
+            <option value="teacher">Teacher</option>
+            <option value="department_head">Department Head</option>
+            <option value="school_leader">School Leader</option>
+            <option value="admin">Admin</option>
+          </select>
+          {form.formState.errors.role && <p className="text-xs text-rose-600">{form.formState.errors.role.message}</p>}
+        </div>
+        {form.watch("role") === "department_head" ? (
+          <div className="space-y-2">
+            <Label htmlFor="department_name">Department name</Label>
+            <Input id="department_name" {...form.register("department_name")} />
+            {form.formState.errors.department_name && (
+              <p className="text-xs text-rose-600">{form.formState.errors.department_name.message}</p>
+            )}
+          </div>
+        ) : null}
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" autoComplete="new-password" {...form.register("password")} />

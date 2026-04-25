@@ -18,6 +18,13 @@ export type LoginResponse = {
   token_type?: string;
 };
 
+export type RegisterResponse = {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: string;
+};
+
 export type SubjectDto = {
   id: string;
   name: string;

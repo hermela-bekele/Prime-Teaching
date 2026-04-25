@@ -115,8 +115,8 @@ async def register(request: RegisterRequest, db: DbSession) -> RegisterResponse:
             role=role,
             school_id=school.id,
             department_name=(request.department_name or None),
-            active_status=ActiveStatus.ACTIVE,
-            visibility_scope=VisibilityScope.OWN_RECORDS,
+            active_status=ActiveStatus.ACTIVE.value,
+            visibility_scope=VisibilityScope.OWN_RECORDS.value,
         )
         db.add(user)
         await db.flush()

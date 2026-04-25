@@ -1,4 +1,6 @@
-from sqlalchemy import Enum as SQLEnum
+from datetime import datetime
+
+from sqlalchemy import DateTime, Enum as SQLEnum
 from sqlalchemy import JSON, ForeignKey, String, cast
 from sqlalchemy.dialects.postgresql import UUID as PGUUIDType
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -34,23 +36,11 @@ class User(Base, UUIDMixin, TimestampMixin):
     grade_access: Mapped[Optional[List[str]]] = mapped_column(JSON, default=list)
     subject_access: Mapped[Optional[List[str]]] = mapped_column(JSON, default=list)
     stream_access: Mapped[Optional[List[str]]] = mapped_column(JSON, default=list)
-    active_status: Mapped[ActiveStatus] = mapped_column(
-        SQLEnum(
-            ActiveStatus,
-            name="active_status",
-            values_callable=lambda obj: [e.value for e in obj],
-        ),
-        default=ActiveStatus.ACTIVE,
-    )
-    visibility_scope: Mapped[VisibilityScope] = mapped_column(
-        SQLEnum(
-            VisibilityScope,
-            name="visibility_scope",
-            values_callable=lambda obj: [e.value for e in obj],
-        ),
-        default=VisibilityScope.OWN_RECORDS,
-    )
-    last_login_date: Mapped[Optional[str]] = mapped_column(String)
+    # Many deployments store these as plain VARCHAR, not PostgreSQL enum types.
+    active_status: Mapped[str] = mapped_column(String(50), default=ActiveStatus.ACTIVE.value)
+    visibility_scope: Mapped[str] = mapped_column(String(50), default=VisibilityScope.OWN_RECORDS.value)
+    # Production DB stores this as timestamp with time zone.
+    last_login_date: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     
     # Relationships (foreign_keys disambiguate multiple FKs from child tables to users.id)
     school: Mapped["School"] = relationship("School", back_populates="users")

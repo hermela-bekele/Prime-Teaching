@@ -69,8 +69,8 @@ export default function TeacherTeachingNotesPage() {
         </p>
       </div>
 
-      <div className="grid min-h-0 gap-6 lg:grid-cols-[minmax(300px,400px)_minmax(0,1fr)] lg:items-start">
-        <div className="rounded-xl bg-slate-100/70 p-3 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto lg:pr-1">
+      <div className="grid min-h-0 gap-6 lg:h-[calc(100vh-12rem)] lg:grid-cols-[minmax(300px,400px)_minmax(0,1fr)]">
+        <div className="scrollbar-hidden rounded-xl bg-slate-100/70 p-3 lg:min-h-0 lg:overflow-y-auto lg:pr-1">
           {isLoading ? <p className="px-2 text-sm text-slate-500">Loading sessions…</p> : null}
           {!isLoading && sessions.length === 0 ? (
             <p className="rounded-lg border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
@@ -125,7 +125,7 @@ export default function TeacherTeachingNotesPage() {
             ))}
         </div>
 
-        <div className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <div className="min-w-0 lg:min-h-0">
           <TeachingNoteDetailPanel sessionId={selected?.id ?? null} sessionTitle={selected?.title ?? null} />
         </div>
       </div>
