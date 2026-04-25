@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
-import { TamaguiProvider, YStack } from "tamagui";
+import { PaperProvider } from "react-native-paper";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import tamaguiConfig from "./tamagui.config";
+import { primeTheme } from "@/theme/primeTheme";
 
 export function RootProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -16,13 +17,13 @@ export function RootProviders({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <TamaguiProvider config={tamaguiConfig}>
-      <QueryClientProvider client={queryClient}>
-        <YStack flex={1} backgroundColor="$background">
+    <SafeAreaProvider>
+      <PaperProvider theme={primeTheme}>
+        <QueryClientProvider client={queryClient}>
           {children}
-        </YStack>
-        <StatusBar style="auto" />
-      </QueryClientProvider>
-    </TamaguiProvider>
+          <StatusBar style="dark" />
+        </QueryClientProvider>
+      </PaperProvider>
+    </SafeAreaProvider>
   );
 }
