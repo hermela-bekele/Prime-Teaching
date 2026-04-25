@@ -70,6 +70,7 @@ export default function TeacherDashboardPage() {
   const [tab, setTab] = useState<"today" | "upcoming" | "overdue">("today");
   const markDelivered = useMarkSessionDelivered();
   const lessonPlanPreview = useLessonPlan(selected?.id ?? null);
+  const useMockData = (process.env.NEXT_PUBLIC_USE_MOCK_DATA ?? "true") !== "false";
 
   const firstName = useMemo(() => {
     const n = user?.name?.trim();
@@ -82,13 +83,16 @@ export default function TeacherDashboardPage() {
     const upcoming = sessions.filter((s) => sessionBucket(s) === "upcoming").length;
     const completed = sessions.filter((s) => sessionBucket(s) === "completed").length;
     const overdue = sessions.filter((s) => sessionBucket(s) === "overdue").length;
+    if (useMockData) {
+      return { today, upcoming, completed, overdue };
+    }
     return {
       today: teacherMeta?.today_count ?? today,
       upcoming: teacherMeta?.upcoming_count ?? upcoming,
       completed: teacherMeta?.completed_count ?? completed,
       overdue: teacherMeta?.pending_count ?? overdue
     };
-  }, [sessions, teacherMeta]);
+  }, [sessions, teacherMeta, useMockData]);
 
   const byTab = useMemo(
     () => ({
@@ -163,12 +167,15 @@ export default function TeacherDashboardPage() {
               </span>
             </TabsTrigger>
             <TabsTrigger value="upcoming" className="rounded-lg px-4 py-2 data-[state=active]:shadow-sm">
-              Upcoming
+              <span className="inline-flex items-center">
+                Upcoming
+                {tabBadge(byTab.upcoming.length, "blue")}
+              </span>
             </TabsTrigger>
             <TabsTrigger value="overdue" className="rounded-lg px-4 py-2 data-[state=active]:shadow-sm">
               <span className="inline-flex items-center">
                 Overdue
-                {byTab.overdue.length > 0 ? tabBadge(byTab.overdue.length, "rose") : null}
+                {tabBadge(byTab.overdue.length, "rose")}
               </span>
             </TabsTrigger>
           </TabsList>
@@ -205,8 +212,8 @@ export default function TeacherDashboardPage() {
       </section>
 
       <Dialog open={planOpen} onOpenChange={setPlanOpen}>
-        <DialogContent className="max-h-[min(90vh,880px)] max-w-3xl overflow-y-auto p-0 sm:rounded-xl">
-          <DialogHeader className="border-b border-slate-100 px-6 py-4 text-left">
+        <DialogContent className="flex max-h-[min(90vh,880px)] max-w-3xl flex-col p-0 sm:rounded-xl">
+          <DialogHeader className="shrink-0 border-b border-slate-100 px-6 py-4 text-left">
             <DialogTitle className="text-lg font-semibold">Lesson plan</DialogTitle>
             {selected ? (
               <p className="text-sm font-normal text-slate-500">
@@ -225,7 +232,7 @@ export default function TeacherDashboardPage() {
               </p>
             ) : null}
           </DialogHeader>
-          <div className="px-4 pb-6 pt-2 sm:px-6">
+          <div className="flex-1 overflow-y-auto px-4 pb-6 pt-2 [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300/90 [&::-webkit-scrollbar-track]:bg-transparent sm:px-6">
             <LessonPlanViewer sessionId={selected?.id ?? null} />
           </div>
         </DialogContent>
