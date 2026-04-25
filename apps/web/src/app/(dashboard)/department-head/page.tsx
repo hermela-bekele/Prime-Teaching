@@ -183,7 +183,7 @@ export default function DepartmentHeadDashboardPage() {
                     </p>
                   </div>
                 </div>
-                {t.missed > 0 ? <Badge variant="destructive">{t.missed} overdue</Badge> : null}
+                {t.missed > 0 ? <Badge variant="danger">{t.missed} overdue</Badge> : null}
               </div>
 
               <div className="space-y-1">

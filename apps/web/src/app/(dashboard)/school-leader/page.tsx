@@ -65,7 +65,9 @@ export default function SchoolLeaderDashboardPage() {
   const totalTeachers = data?.total_teachers ?? departments.reduce((sum, d) => sum + d.teachers, 0);
   const totalDepartments = departments.length || schoolLeaderDepartmentRates.length;
   const sessionsPerMonth = departments.reduce((sum, d) => sum + d.sessions, 0) * 6;
-  const trendDelta = trend.length > 1 ? trend[trend.length - 1] - trend[0] : 0;
+  const trendStart = trend[0] ?? 0;
+  const trendEnd = trend[trend.length - 1] ?? trendStart;
+  const trendDelta = trend.length > 1 ? trendEnd - trendStart : 0;
 
   const exportReports = () => {
     const blob = new Blob([JSON.stringify(data ?? { sample: true }, null, 2)], { type: "application/json;charset=utf-8" });
