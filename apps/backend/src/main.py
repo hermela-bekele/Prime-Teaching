@@ -14,10 +14,13 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title=settings.app_name)
 
 _origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
-if _origins:
+_cors_regex = (settings.cors_origin_regex or "").strip()
+_use_cors = bool(_origins) or bool(_cors_regex)
+if _use_cors:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_origins,
+        allow_origin_regex=_cors_regex or None,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

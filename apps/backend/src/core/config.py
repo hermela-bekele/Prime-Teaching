@@ -32,8 +32,10 @@ class Settings(BaseSettings):
     supabase_jwt_secret: str = ""
     auth_provider: str = "supabase"
 
-    # CORS (comma-separated origins, e.g. http://localhost:3000)
+    # CORS (comma-separated origins, e.g. http://localhost:3000,https://app.vercel.app)
     cors_origins: str = "http://localhost:3000"
+    # Optional: regex for dynamic preview hosts (e.g. Vercel). Example: https://.*\.vercel\.app
+    cors_origin_regex: str = ""
     
     # Debug
     debug: bool = False
