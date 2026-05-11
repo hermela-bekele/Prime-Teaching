@@ -1,7 +1,15 @@
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar, Drawer, Icon, Menu, Modal, Portal, Text } from "react-native-paper";
+import {
+  Avatar,
+  Drawer,
+  Icon,
+  Menu,
+  Modal,
+  Portal,
+  Text,
+} from "react-native-paper";
 import { usePathname, useRouter } from "expo-router";
 
 import type { UserRole } from "@/lib/api-types";
@@ -49,10 +57,16 @@ const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
   { value: "teacher", label: "Teacher" },
   { value: "department_head", label: "Department Head" },
   { value: "school_leader", label: "School Leader" },
-  { value: "admin", label: "Admin" }
+  { value: "admin", label: "Admin" },
 ];
 
-function Sidebar({ navItems, onNavigate }: { navItems: NavItem[]; onNavigate: (href: string) => void }) {
+function Sidebar({
+  navItems,
+  onNavigate,
+}: {
+  navItems: NavItem[];
+  onNavigate: (href: string) => void;
+}) {
   const pathname = usePathname();
   const { name, email, role } = useAuthStore();
 
@@ -68,15 +82,32 @@ function Sidebar({ navItems, onNavigate }: { navItems: NavItem[]; onNavigate: (h
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0B1120", paddingTop: 18 }}>
-      <View style={{ paddingHorizontal: 14, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: "rgba(255,255,255,0.1)" }}>
-        <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>PRIME Teaching</Text>
-        <Text style={{ color: "#94a3b8", marginTop: 2, fontSize: 12 }}>AI for educators</Text>
+      <View
+        style={{
+          paddingHorizontal: 14,
+          paddingBottom: 14,
+          borderBottomWidth: 1,
+          borderBottomColor: "rgba(255,255,255,0.1)",
+        }}
+      >
+        <Text style={{ color: "white", fontWeight: "700", fontSize: 18 }}>
+          PRIME Teaching
+        </Text>
+        <Text style={{ color: "#94a3b8", marginTop: 2, fontSize: 12 }}>
+          AI for educators
+        </Text>
       </View>
 
-      <ScrollView style={{ flex: 1, paddingHorizontal: 8, paddingVertical: 12 }}>
-        <Drawer.Section title="Workspace" theme={{ colors: { onSurfaceVariant: "#94a3b8" } }}>
+      <ScrollView
+        style={{ flex: 1, paddingHorizontal: 8, paddingVertical: 12 }}
+      >
+        <Drawer.Section
+          title="Workspace"
+          theme={{ colors: { onSurfaceVariant: "#94a3b8" } }}
+        >
           {navItems.map((item) => {
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const active =
+              pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
               <Pressable
                 key={item.href}
@@ -89,23 +120,49 @@ function Sidebar({ navItems, onNavigate }: { navItems: NavItem[]; onNavigate: (h
                   backgroundColor: active ? "#1d4ed8" : "transparent",
                   marginVertical: 2,
                   paddingVertical: 10,
-                  paddingHorizontal: 12
+                  paddingHorizontal: 12,
                 }}
               >
-                <Icon source={item.icon} size={18} color={active ? "white" : "#94a3b8"} />
-                <Text style={{ color: active ? "white" : "#cbd5e1", fontWeight: "600" }}>{item.label}</Text>
+                <Icon
+                  source={item.icon}
+                  size={18}
+                  color={active ? "white" : "#94a3b8"}
+                />
+                <Text
+                  style={{
+                    color: active ? "white" : "#cbd5e1",
+                    fontWeight: "600",
+                  }}
+                >
+                  {item.label}
+                </Text>
               </Pressable>
             );
           })}
         </Drawer.Section>
       </ScrollView>
 
-      <View style={{ padding: 14, borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.1)" }}>
+      <View
+        style={{
+          padding: 14,
+          borderTopWidth: 1,
+          borderTopColor: "rgba(255,255,255,0.1)",
+        }}
+      >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Avatar.Text size={34} label={initials} style={{ backgroundColor: "#2563eb" }} color="white" />
+          <Avatar.Text
+            size={34}
+            label={initials}
+            style={{ backgroundColor: "#2563eb" }}
+            color="white"
+          />
           <View style={{ flex: 1 }}>
-            <Text style={{ color: "white", fontWeight: "600" }}>{name || "PRIME User"}</Text>
-            <Text style={{ color: "#94a3b8", fontSize: 12 }}>{roleSwitcherLabel(role)}</Text>
+            <Text style={{ color: "white", fontWeight: "600" }}>
+              {name || "PRIME User"}
+            </Text>
+            <Text style={{ color: "#94a3b8", fontSize: 12 }}>
+              {roleSwitcherLabel(role)}
+            </Text>
           </View>
         </View>
       </View>
@@ -163,7 +220,9 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: primeColors.bg, flexDirection: "row" }}>
+    <View
+      style={{ flex: 1, backgroundColor: primeColors.bg, flexDirection: "row" }}
+    >
       {isWide ? (
         <View style={{ width: 280 }}>
           <Sidebar navItems={navItems} onNavigate={handleNavigate} />
@@ -181,7 +240,7 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
             alignItems: "center",
             paddingHorizontal: 14,
             paddingVertical: 10,
-            gap: 10
+            gap: 10,
           }}
         >
           {!isWide ? (
@@ -195,7 +254,7 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
                 borderColor: primeColors.border,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "white"
+                backgroundColor: "white",
               }}
             >
               <Icon source="menu" size={20} color="#475569" />
@@ -203,7 +262,14 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
           ) : null}
 
           <View style={{ flex: 1, minWidth: 0 }}>
-              <Text numberOfLines={1} style={{ fontWeight: "700", fontSize: 14, color: primeColors.text }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                fontWeight: "700",
+                fontSize: 14,
+                color: primeColors.text,
+              }}
+            >
               Addis Prep Academy
             </Text>
           </View>
@@ -215,10 +281,12 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
               borderRadius: 999,
               backgroundColor: "#eff6ff",
               borderWidth: 1,
-              borderColor: "#bfdbfe"
+              borderColor: "#bfdbfe",
             }}
           >
-            <Text style={{ color: "#1d4ed8", fontSize: 12, fontWeight: "600" }}>Demo</Text>
+            <Text style={{ color: "#1d4ed8", fontSize: 12, fontWeight: "600" }}>
+              Demo
+            </Text>
           </View>
 
           <Menu
@@ -236,15 +304,27 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
                   borderRadius: 8,
                   paddingHorizontal: 10,
                   paddingVertical: 6,
-                  backgroundColor: "white"
+                  backgroundColor: "white",
                 }}
               >
-                <Text style={{ fontWeight: "600", color: primeColors.text, fontSize: 13 }}>{roleSwitcherLabel(role)}</Text>
+                <Text
+                  style={{
+                    fontWeight: "600",
+                    color: primeColors.text,
+                    fontSize: 13,
+                  }}
+                >
+                  {roleSwitcherLabel(role)}
+                </Text>
                 <Icon source="chevron-down" size={18} color="#64748b" />
               </Pressable>
             }
           >
-            <Menu.Item title="Switch role (demo)" disabled titleStyle={{ fontSize: 12, color: "#64748b" }} />
+            <Menu.Item
+              title="Switch role (demo)"
+              disabled
+              titleStyle={{ fontSize: 12, color: "#64748b" }}
+            />
             {ROLE_OPTIONS.map((opt) => (
               <Menu.Item
                 key={opt.value}
@@ -257,7 +337,12 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
 
           <Pressable
             onPress={() => {}}
-            style={{ width: 40, height: 40, alignItems: "center", justifyContent: "center" }}
+            style={{
+              width: 40,
+              height: 40,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
             accessibilityRole="button"
             accessibilityLabel="Notifications"
           >
@@ -272,7 +357,7 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
                 borderRadius: 4,
                 backgroundColor: "#f43f5e",
                 borderWidth: 2,
-                borderColor: "white"
+                borderColor: "white",
               }}
             />
           </Pressable>
@@ -282,26 +367,44 @@ export function DashboardShell({ navItems, children }: DashboardShellProps) {
             onDismiss={() => setUserMenuOpen(false)}
             anchor={
               <Pressable onPress={() => setUserMenuOpen(true)}>
-                <Avatar.Text size={36} label={initials} style={{ backgroundColor: "#2563eb" }} color="white" />
+                <Avatar.Text
+                  size={36}
+                  label={initials}
+                  style={{ backgroundColor: "#2563eb" }}
+                  color="white"
+                />
               </Pressable>
             }
           >
             <Menu.Item title="My dashboard" onPress={goMyDashboard} />
-            <Menu.Item title="Log out" titleStyle={{ color: "#e11d48" }} onPress={doLogout} />
+            <Menu.Item
+              title="Log out"
+              titleStyle={{ color: "#e11d48" }}
+              onPress={doLogout}
+            />
           </Menu>
         </View>
 
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 28 }}>{children}</ScrollView>
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 28 }}>
+          {children}
+        </ScrollView>
       </View>
 
       {!isWide ? (
         <Portal>
-          <Modal visible={mobileOpen} onDismiss={() => setMobileOpen(false)} contentContainerStyle={{ margin: 0, height: "100%" }}>
+          <Modal
+            visible={mobileOpen}
+            onDismiss={() => setMobileOpen(false)}
+            contentContainerStyle={{ margin: 0, height: "100%" }}
+          >
             <View style={{ flex: 1, flexDirection: "row" }}>
               <View style={{ width: "82%", maxWidth: 320 }}>
                 <Sidebar navItems={navItems} onNavigate={handleNavigate} />
               </View>
-              <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)" }} onPress={() => setMobileOpen(false)} />
+              <Pressable
+                style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.45)" }}
+                onPress={() => setMobileOpen(false)}
+              />
             </View>
           </Modal>
         </Portal>
