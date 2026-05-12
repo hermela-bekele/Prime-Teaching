@@ -1,5 +1,7 @@
 import type { AppUser } from "@/stores/authStore";
 
+import { isAuthBypassEnabled } from "@/lib/auth-bypass";
+
 /** Map API role strings to dashboard home paths. */
 export function dashboardPathForRole(role: string): string {
   const r = role.toLowerCase().replace(/-/g, "_");
@@ -20,6 +22,7 @@ export function navRoleKey(user: AppUser | null): "teacher" | "department-head" 
 
 /** Role-scoped route guard for dashboard paths. */
 export function canAccessPathForRole(role: string, pathname: string): boolean {
+  if (isAuthBypassEnabled()) return true;
   const r = role.toLowerCase().replace(/-/g, "_");
   if (pathname.startsWith("/teacher")) return r === "teacher" || r === "instructor";
   if (pathname.startsWith("/department-head")) return r === "department_head" || r === "dept_head" || r === "head";

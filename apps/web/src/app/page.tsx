@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 import { asAppRoute } from "@/lib/navigation";
 import { dashboardPathForRole } from "@/lib/roles";
 import { useAuthStore } from "@/stores/authStore";
@@ -15,8 +16,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!hydrated) return;
-    if (token && user) {
-      router.replace(asAppRoute(dashboardPathForRole(user.role)));
+    if (isAuthBypassEnabled() || (token && user)) {
+      router.replace(asAppRoute(dashboardPathForRole(user?.role ?? "admin")));
     } else {
       router.replace(asAppRoute("/login"));
     }

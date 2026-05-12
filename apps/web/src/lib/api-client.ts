@@ -28,6 +28,7 @@ import {
   getMockTeachingNote,
   mockSessions
 } from "@/lib/mock-data";
+import { isAuthBypassEnabled } from "@/lib/auth-bypass";
 import { useAuthStore } from "@/stores/authStore";
 
 const baseURL =
@@ -78,7 +79,7 @@ api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
     const status = error.response?.status;
-    if (status === 401 && typeof window !== "undefined") {
+    if (status === 401 && typeof window !== "undefined" && !isAuthBypassEnabled()) {
       useAuthStore.getState().logout();
       if (!window.location.pathname.startsWith("/login")) {
         window.location.assign("/login");

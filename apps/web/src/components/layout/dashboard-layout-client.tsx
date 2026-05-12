@@ -34,6 +34,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AUTH_BYPASS_DEMO_TOKEN,
+  AUTH_BYPASS_DEMO_USER,
+  isAuthBypassEnabled,
+} from "@/lib/auth-bypass";
 import { asAppRoute } from "@/lib/navigation";
 import {
   canAccessPathForRole,
@@ -186,13 +191,14 @@ export function DashboardLayoutClient({
 
   useEffect(() => {
     if (!hydrated) return;
-    if (!token) {
+    if (!isAuthBypassEnabled() && !token) {
       router.replace(asAppRoute("/login"));
     }
   }, [hydrated, token, router]);
 
   useEffect(() => {
-    if (!hydrated || !token || !user) return;
+    if (!hydrated || !user) return;
+    if (!isAuthBypassEnabled() && !token) return;
     if (!canAccessPathForRole(user.role, pathname)) {
       router.replace(asAppRoute(dashboardPathForRole(user.role)));
     }
@@ -234,7 +240,7 @@ export function DashboardLayoutClient({
     );
   }
 
-  if (!token) {
+  if (!isAuthBypassEnabled() && !token) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-50 text-sm text-slate-500">
         Redirecting to sign in…
@@ -533,6 +539,15 @@ export function DashboardLayoutClient({
                 <DropdownMenuItem
                   className="text-rose-600 focus:text-rose-600"
                   onClick={() => {
+                    if (isAuthBypassEnabled()) {
+                      useAuthStore
+                        .getState()
+                        .setAuth(AUTH_BYPASS_DEMO_TOKEN, AUTH_BYPASS_DEMO_USER);
+                      router.replace(
+                        asAppRoute(dashboardPathForRole(AUTH_BYPASS_DEMO_USER.role)),
+                      );
+                      return;
+                    }
                     logout();
                     router.replace(asAppRoute("/login"));
                   }}
